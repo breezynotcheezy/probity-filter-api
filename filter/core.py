@@ -38,7 +38,6 @@ def detect(
             if best is None or res.candidates[0].confidence > best.candidates[0].confidence:
                 best = res
                 if res.candidates[0].confidence >= 0.99:
-
                     break
     if best is None and cap_bytes is not None and isinstance(source, (str, Path)):
         payload = Path(source).read_bytes()
@@ -51,7 +50,6 @@ def detect(
         best = Result(
             candidates=[Candidate(media_type="application/octet-stream", confidence=0.0)]
         )
-        
     if cache and isinstance(source, (str, Path)):
         cache_put(Path(source), best)
     return best
