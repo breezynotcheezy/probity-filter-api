@@ -6,9 +6,9 @@ from .base import EngineBase
 from ..registry import register
 _SIGS = {
     "[Content_Types].xml": {
-        "/word/": ("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx"),
-        "/ppt/": ("application/vnd.openxmlformats-officedocument.presentationml.presentation", "pptx"),
-        "/xl/": ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx"),
+        "word/": ("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx"),
+        "ppt/": ("application/vnd.openxmlformats-officedocument.presentationml.presentation", "pptx"),
+        "xl/": ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx"),
     },
     "mimetype": {
         "application/vnd.oasis.opendocument.text": ("application/vnd.oasis.opendocument.text", "odt"),
