@@ -42,6 +42,7 @@ def detect(
     if best is None and cap_bytes is not None and isinstance(source, (str, Path)):
         payload = Path(source).read_bytes()
         for name in engines:
+            
             res = get(name)()(payload)
             if res.candidates:
                 best = res

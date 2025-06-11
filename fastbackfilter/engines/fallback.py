@@ -5,14 +5,14 @@ from ..registry import register
 
 @register
 class OctetEngine(EngineBase):
-    name = "octet"
+    name = "fallbackengine"
     cost = 0.0
 
     def sniff(self, payload: bytes) -> Result:
         return Result(
             candidates=[
                 Candidate(
-                    media_type="application/octet-stream",
+                    media_type="*UNSAFE* / *NO ENGINE*",
                     confidence=0.0,
                 )
             ]
