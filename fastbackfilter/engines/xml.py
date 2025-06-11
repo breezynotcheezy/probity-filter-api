@@ -12,7 +12,7 @@ class XMLEngine(EngineBase):
         idx = window.find(self._MAGIC)
         cand = []
         if idx != -1:
-            conf = 1.0 if idx == 0 else 0.90 - min(idx /1 (1 << 20), 0.1)
+            conf = 1.0 if idx == 0 else 0.90 - min(idx / (1 << 20), 0.1)
             cand.append(
                 Candidate(
                     media_type="application/xml",
