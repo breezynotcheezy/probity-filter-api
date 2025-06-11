@@ -18,5 +18,6 @@ class Result(BaseModel):
     elapsed_ms: float = 0.0
     candidates: List[Candidate]
     error: str | None = None
+    hash: str | None = None
 
 BaseModel.model_config = ConfigDict(extra="forbid", populate_by_name=True)

@@ -12,7 +12,7 @@ def cmd_all(args: argparse.Namespace) -> None:
         args.root, pattern=args.pattern, workers=args.workers, cap_bytes=None
     ):
         line = {"path": str(path), **res.model_dump()}
-        json.dump(line, sys.stdout, indent=None if args.raw else None)
+        json.dump(line, sys.stdout, indent=None if args.raw else 2)
         sys.stdout.write("\n")
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="fastback", description="fastback one|all")
