@@ -8,7 +8,7 @@ from logging.config import dictConfig
 class JsonFormatter(logging.Formatter):
     """Pretty JSON formatter for console logs."""
 
-    def format(self, record: logging.LogRecord) -> str:  # type: ignore[override]
+    def format(self, record: logging.LogRecord) -> str:q
         obj = {
             "time": self.formatTime(record, "%Y-%m-%dT%H:%M:%S"),
             "level": record.levelname,
