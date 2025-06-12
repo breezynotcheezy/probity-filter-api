@@ -39,10 +39,9 @@ def detect(
                 best = res
                 if res.candidates[0].confidence >= 0.99:
                     break
-    if best is None and cap_bytes is not None and isinstance(source, (str, Path)):
+    if (best is None or best.candidates[0].confidence == 0.0) and cap_bytes is not None and isinstance(source, (str, Path)):
         payload = Path(source).read_bytes()
         for name in engines:
-            
             res = get(name)()(payload)
             if res.candidates:
                 best = res
