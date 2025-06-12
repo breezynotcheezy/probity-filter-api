@@ -6,7 +6,7 @@ from ..registry import register
 @register
 class XMLEngine(EngineBase):
     name = "xml"
-    _MAGIC = [b"<?xml", b'\xFF\xFE', b'\xFE\xFF']
+    _MAGIC = [b'\xEF\xBB\xBF', b'\xFF\xFE', b'\xFE\xFF', b"<?xml"]
 
     def sniff(self, payload: bytes) -> Result:
         window = payload[:8]
