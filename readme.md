@@ -1,7 +1,9 @@
-```bash
-pip install fastbackfilter[perf]
+*************************************************************
+pip install fastbackfilter
 python -m fastbackfilter.cli one sample.pdf
-```
+*************************************************************
+
+
 
 Common file types such as PNG, MP3, MP4, HTML, GZIP, JSON, CSV, TAR, WAV, EXE,
 BAT and SH now
@@ -23,9 +25,10 @@ python -m fastbackfilter.cli all mydir --ext exe sh
 ```
 
 ## Logging
+=======
 
 Set `FASTBACK_LOG` to change verbosity. Logs are emitted as pretty JSON, for example:
 
-```bash
+*************************************************************
 FASTBACK_LOG=INFO python -m fastbackfilter.cli one sample.pdf
-```
+*************************************************************

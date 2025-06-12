@@ -25,7 +25,10 @@ def detect(
     cap_bytes: int | None = 4096,
     engine_order: Iterable[str] | None = None,
     only: Iterable[str] | None = None,
+
     extensions: Iterable[str] | None = None,
+=======
+
     cache: bool = True,
 ) -> Result:
     """Identify ``source`` using registered engines.
@@ -42,17 +45,23 @@ def detect(
         Optional explicit engine sequence to try.
     only:
         Restrict autodetection to this iterable of engine names.
+
     extensions:
         Optional iterable of file extensions to allow when ``source`` is a
         path. Detection is skipped if the extension is not listed.
+=======
+
     cache:
         Whether to store and retrieve results from the cache.
     """
+
 
     if extensions is not None and isinstance(source, (str, Path)):
         allowed = {e.lower().lstrip('.') for e in extensions}
         if Path(source).suffix.lower().lstrip('.') not in allowed:
             return Result(candidates=[Candidate(media_type="application/octet-stream", confidence=0.0)])
+
+=======
 
     payload = _load_bytes(source, cap_bytes)
     if engine != "auto":
@@ -100,7 +109,10 @@ def scan_dir(
     pattern: str = "**/*",
     workers: int = os.cpu_count() or 4,
     only: Iterable[str] | None = None,
+
     extensions: Iterable[str] | None = None,
+=======
+
     **kw,
 ):
     """Yield ``(path, Result)`` tuples for files under ``root``.
@@ -115,9 +127,12 @@ def scan_dir(
         Thread pool size for concurrent scanning.
     only:
         Restrict autodetection to this iterable of engine names.
+
     extensions:
         Optional iterable of file extensions to scan. Files with other
         extensions are skipped.
+=======
+
     kw:
         Additional arguments passed to :func:`detect`.
     """
@@ -128,6 +143,10 @@ def scan_dir(
         allowed = {e.lower().lstrip('.') for e in extensions}
         paths = [p for p in paths if p.suffix.lower().lstrip('.') in allowed]
     with cf.ThreadPoolExecutor(max_workers=workers) as ex:
+
         futs = {ex.submit(detect, p, only=only, extensions=extensions, **kw): p for p in paths}
+=======
+        futs = {ex.submit(detect, p, only=only, **kw): p for p in paths}
+
         for fut in cf.as_completed(futs):
             yield futs[fut], fut.result()
