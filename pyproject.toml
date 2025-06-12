@@ -6,7 +6,8 @@ requires-python = ">=3.9"
 dependencies = [
   "pydantic>=2.7",
   "cachetools>=5.3",
-  "platformdirs>=4.2"
+  "platformdirs>=4.2",
+  "olefile>=0.46"
 ]
 [build-system]
 requires = ["setuptools>=61", "wheel"]
