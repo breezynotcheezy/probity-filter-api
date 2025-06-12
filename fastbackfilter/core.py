@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Iterable, Sequence
 from .cache import get as cache_get, put as cache_put
 from .exceptions import FastbackError
-from .registry import get, list_engines
+from .registry import get, list_engines, get_instance
 from .types import Result, Candidate
 logger = logging.getLogger(__name__)
 def _load_bytes(source: str | Path | bytes, cap: int | None) -> bytes:
@@ -29,11 +29,11 @@ def detect(
 ) -> Result:
     payload = _load_bytes(source, cap_bytes)
     if engine != "auto":
-        return get(engine)()(payload)
+        return get_instance(engine)(payload)
     engines: Sequence[str] = engine_order or list_engines()
     best: Result | None = None
     for name in engines:
-        res = get(name)()(payload)
+        res = get_instance(name)(payload)
         if res.candidates:
             if best is None or res.candidates[0].confidence > best.candidates[0].confidence:
                 best = res
@@ -42,7 +42,7 @@ def detect(
     if (best is None or best.candidates[0].confidence == 0.0) and cap_bytes is not None and isinstance(source, (str, Path)):
         payload = Path(source).read_bytes()
         for name in engines:
-            res = get(name)()(payload)
+            res = get_instance(name)(payload)
             if res.candidates:
                 best = res
                 break
