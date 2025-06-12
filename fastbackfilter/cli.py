@@ -5,7 +5,11 @@ import argparse
 from pathlib import Path
 from .core import detect, scan_dir
 def cmd_one(args: argparse.Namespace) -> None:
+
+    res = detect(args.file, cap_bytes=None, only=args.only, extensions=args.ext)
+=======
     res = detect(args.file, cap_bytes=None, only=args.only)
+
     json.dump(res.model_dump(), sys.stdout, indent=None if args.raw else 2)
     sys.stdout.write("\n")
 def cmd_all(args: argparse.Namespace) -> None:
@@ -15,6 +19,10 @@ def cmd_all(args: argparse.Namespace) -> None:
         workers=args.workers,
         cap_bytes=None,
         only=args.only,
+
+        extensions=args.ext,
+=======
+
     ):
         line = {"path": str(path), **res.model_dump()}
         json.dump(line, sys.stdout, indent=None if args.raw else 2)
@@ -30,6 +38,15 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="ENGINE",
         help="Restrict detection to these engines",
     )
+
+    p_one.add_argument(
+        "--ext",
+        nargs="+",
+        metavar="EXT",
+        help="Only analyze files with these extensions",
+    )
+=======
+
     p_one.add_argument("--raw", action="store_true", help="compact JSON")
     p_one.set_defaults(func=cmd_one)
     p_all = sub.add_parser("all", help="Scan directory recursively")
@@ -42,6 +59,15 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="ENGINE",
         help="Restrict detection to these engines",
     )
+
+    p_all.add_argument(
+        "--ext",
+        nargs="+",
+        metavar="EXT",
+        help="Only analyze files with these extensions",
+    )
+=======
+
     p_all.add_argument("--raw", action="store_true", help="compact JSON")
     p_all.set_defaults(func=cmd_all)
     return p
