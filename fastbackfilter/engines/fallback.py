@@ -5,7 +5,7 @@ from ..registry import register
 
 @register
 class OctetEngine(EngineBase):
-    name = "fallbackengine"
+    name = "fallback-engine"
     cost = 100.0
 
     def sniff(self, payload: bytes) -> Result:
