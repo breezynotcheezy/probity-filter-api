@@ -4,6 +4,7 @@ import zipfile, io
 from ..types import Candidate, Result
 from .base import EngineBase
 from ..registry import register
+
 _SIGS = {
     "[Content_Types].xml": {
         "word/": ("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx"),
@@ -20,7 +21,10 @@ _SIGS = {
 class ZipOfficeEngine(EngineBase):
     name = "zipoffice"
     cost = 0.5
+
     def sniff(self, payload: bytes) -> Result:
+        if not payload.startswith(b"PK\x03\x04"):
+            return Result(candidates=[])
         cand = []
         try:
             with zipfile.ZipFile(io.BytesIO(payload)) as zf:
