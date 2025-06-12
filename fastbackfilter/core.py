@@ -24,12 +24,34 @@ def detect(
     *,
     cap_bytes: int | None = 4096,
     engine_order: Iterable[str] | None = None,
+    only: Iterable[str] | None = None,
     cache: bool = True,
 ) -> Result:
+    """Identify ``source`` using registered engines.
+
+    Parameters
+    ----------
+    source:
+        File path, bytes or byte-like object to inspect.
+    engine:
+        Force the use of a single engine instead of autodetecting.
+    cap_bytes:
+        Read at most this many bytes from ``source``.
+    engine_order:
+        Optional explicit engine sequence to try.
+    only:
+        Restrict autodetection to this iterable of engine names.
+    cache:
+        Whether to store and retrieve results from the cache.
+    """
+
     payload = _load_bytes(source, cap_bytes)
     if engine != "auto":
         return get_instance(engine)(payload)
     engines: Sequence[str] = engine_order or list_engines()
+    if only is not None:
+        allowed = set(only)
+        engines = [e for e in engines if e in allowed]
     best: Result | None = None
 
     with cf.ThreadPoolExecutor(max_workers=len(engines)) as ex:
@@ -68,11 +90,28 @@ def scan_dir(
     *,
     pattern: str = "**/*",
     workers: int = os.cpu_count() or 4,
+    only: Iterable[str] | None = None,
     **kw,
 ):
+    """Yield ``(path, Result)`` tuples for files under ``root``.
+
+    Parameters
+    ----------
+    root:
+        Directory to scan.
+    pattern:
+        Glob pattern relative to ``root``.
+    workers:
+        Thread pool size for concurrent scanning.
+    only:
+        Restrict autodetection to this iterable of engine names.
+    kw:
+        Additional arguments passed to :func:`detect`.
+    """
+
     root = Path(root)
     paths = [p for p in root.glob(pattern) if p.is_file()]
     with cf.ThreadPoolExecutor(max_workers=workers) as ex:
-        futs = {ex.submit(detect, p, **kw): p for p in paths}
+        futs = {ex.submit(detect, p, only=only, **kw): p for p in paths}
         for fut in cf.as_completed(futs):
             yield futs[fut], fut.result()
