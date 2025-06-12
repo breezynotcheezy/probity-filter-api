@@ -7,7 +7,7 @@ from .core import detect, scan_dir
 def cmd_one(args: argparse.Namespace) -> None:
 
     res = detect(args.file, cap_bytes=None, only=args.only, extensions=args.ext)
-=======
+
     res = detect(args.file, cap_bytes=None, only=args.only)
 
     json.dump(res.model_dump(), sys.stdout, indent=None if args.raw else 2)
@@ -21,7 +21,7 @@ def cmd_all(args: argparse.Namespace) -> None:
         only=args.only,
 
         extensions=args.ext,
-=======
+
 
     ):
         line = {"path": str(path), **res.model_dump()}
@@ -45,7 +45,7 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="EXT",
         help="Only analyze files with these extensions",
     )
-=======
+
 
     p_one.add_argument("--raw", action="store_true", help="compact JSON")
     p_one.set_defaults(func=cmd_one)
@@ -66,7 +66,7 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="EXT",
         help="Only analyze files with these extensions",
     )
-=======
+
 
     p_all.add_argument("--raw", action="store_true", help="compact JSON")
     p_all.set_defaults(func=cmd_all)
