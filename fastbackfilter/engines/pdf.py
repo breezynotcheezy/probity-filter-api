@@ -9,7 +9,7 @@ class PDFEngine(EngineBase):
     cost = 0.1
     _MAGIC = b"%PDF" # in-house
     def sniff(self, payload: bytes) -> Result:
-        window = payload[:1 << 20]#check first 20 bytes
+        window = payload[:8]#check first 8 bytes
         idx = window.find(self._MAGIC)
         cand = []
         if idx != -1:

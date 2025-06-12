@@ -8,7 +8,7 @@ class XMLEngine(EngineBase):
     name = "xml"
     _MAGIC = b"<?xml"
     def sniff(self, payload: bytes) -> Result:
-        window = payload[:1 << 20]
+        window = payload[:8]
         idx = window.find(self._MAGIC)
         cand = []
         if idx != -1:
