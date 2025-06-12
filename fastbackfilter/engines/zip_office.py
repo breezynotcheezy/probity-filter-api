@@ -25,18 +25,23 @@ class ZipOfficeEngine(EngineBase):
         try:
             with zipfile.ZipFile(io.BytesIO(payload)) as zf:
                 namelist = zf.namelist()
+                found_type = False
                 if "[Content_Types].xml" in namelist:
                     for dir_, (mime, ext) in _SIGS["[Content_Types].xml"].items():
                         if any(n.startswith(dir_) for n in namelist):
                             cand.append(
                                 Candidate(media_type=mime, extension=ext, confidence=0.95)
                             )
+                            found_type = True
                             break
-                if "mimetype" in namelist:
+                if "mimetype" in namelist and not found_type:
                     mime = zf.read("mimetype").decode(errors="ignore")
                     if mime in _SIGS["mimetype"]:
                         mt, ext = _SIGS["mimetype"][mime]
                         cand.append(Candidate(media_type=mt, extension=ext, confidence=0.98))
+                        found_type = True
+                if not found_type:
+                    cand.append(Candidate(media_type="application/zip", extension="zip", confidence=0.98))
         except Exception:
             pass
         return Result(candidates=cand)
