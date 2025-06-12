@@ -13,6 +13,7 @@ def cmd_one(args: argparse.Namespace) -> None:
     json.dump(res.model_dump(), sys.stdout, indent=None if args.raw else 2)
     sys.stdout.write("\n")
 def cmd_all(args: argparse.Namespace) -> None:
+    results = []
     for path, res in scan_dir(
         args.root,
         pattern=args.pattern,
@@ -25,8 +26,9 @@ def cmd_all(args: argparse.Namespace) -> None:
 
     ):
         line = {"path": str(path), **res.model_dump()}
-        json.dump(line, sys.stdout, indent=None if args.raw else 2)
-        sys.stdout.write("\n")
+        results.append(line)
+    json.dump(results, sys.stdout, indent=None if args.raw else 2)
+    sys.stdout.write("\n")
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="fastback", description="fastback one|all")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -52,7 +54,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_all = sub.add_parser("all", help="Scan directory recursively")
     p_all.add_argument("root", type=Path, help="root folder")
     p_all.add_argument("--pattern", default="**/*", help="glob (default **/*)")
-    p_all.add_argument("--workers", type=int, default=4, help="thread pool size")
+    p_all.add_argument("--workers", type=int, default=8, help="thread pool size")
     p_all.add_argument(
         "--only",
         nargs="+",
