@@ -13,6 +13,10 @@ class CSVEngine(EngineBase):
     def sniff(self, payload: bytes) -> Result:
         try:
             text = payload.decode("utf-8", errors="replace")
+            
+            if "�" in text or any(ord(c) < 32 and c not in "\n\r\t" for c in text):
+                return Result(candidates=[])
+
             sample = text.splitlines()
             if not sample:
                 return Result(candidates=[])
@@ -23,7 +27,7 @@ class CSVEngine(EngineBase):
             reader = csv.reader(io.StringIO(sample_text), dialect)
             row_lengths = {len(row) for row in reader if row}
             if len(row_lengths) == 1 and list(row_lengths)[0] > 1:
-                confidence = 0.95 if has_header else 0.90
+                confidence = 0.96 if has_header else 0.96
                 return Result(candidates=[
                     Candidate(media_type="text/csv", extension="csv", confidence=confidence)
                 ])
