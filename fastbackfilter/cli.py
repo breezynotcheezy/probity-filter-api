@@ -3,14 +3,32 @@ import json
 import sys
 import argparse
 from pathlib import Path
+from datetime import datetime
 from .core import detect, scan_dir
+from .types import DetectionResult, Candidate, Result
+
+
+def to_detection_result(path: Path, res: Result) -> DetectionResult:
+    cand = res.candidates[0] if res.candidates else Candidate(media_type="", confidence=0.0)
+    size = path.stat().st_size if path.exists() else res.bytes_analyzed
+    return DetectionResult(
+        file_name=str(path),
+        detected_type=cand.media_type,
+        confidence_score=round(cand.confidence * 100, 2),
+        detection_method=res.engine,
+        timestamp=datetime.utcnow().isoformat() + "Z",
+        errors=[res.error] if res.error else [],
+        warnings=[],
+        analysis_time=res.elapsed_ms,
+        file_size=size,
+        mime_type=cand.media_type,
+        extension=cand.extension,
+        hash=res.hash,
+    )
 def cmd_one(args: argparse.Namespace) -> None:
-
     res = detect(args.file, cap_bytes=None, only=args.only, extensions=args.ext)
-
-    res = detect(args.file, cap_bytes=None, only=args.only)
-
-    json.dump(res.model_dump(), sys.stdout, indent=None if args.raw else 2)
+    report = to_detection_result(args.file, res)
+    json.dump(report.model_dump(), sys.stdout, indent=None if args.raw else 2)
     sys.stdout.write("\n")
 def cmd_all(args: argparse.Namespace) -> None:
     results = []
@@ -20,13 +38,10 @@ def cmd_all(args: argparse.Namespace) -> None:
         workers=args.workers,
         cap_bytes=None,
         only=args.only,
-
         extensions=args.ext,
-
-
     ):
-        line = {"path": str(path), **res.model_dump()}
-        results.append(line)
+        report = to_detection_result(path, res)
+        results.append(report.model_dump())
     json.dump(results, sys.stdout, indent=None if args.raw else 2)
     sys.stdout.write("\n")
 def build_parser() -> argparse.ArgumentParser:
