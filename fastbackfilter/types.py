@@ -33,6 +33,6 @@ class DetectionResult(BaseModel):
     file_size: int | None = None
     mime_type: str | None = None
     extension: str | None = None
-    hash: str | None = None
+
 
 BaseModel.model_config = ConfigDict(extra="forbid", populate_by_name=True)
