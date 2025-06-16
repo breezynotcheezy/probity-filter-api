@@ -10,27 +10,35 @@ class CSVEngine(EngineBase):
     name = "csv"
     cost = 0.05
 
+    DELIMS = ",;\t|"
+    MIN_ROWS = 2
+
     def sniff(self, payload: bytes) -> Result:
         try:
             text = payload.decode("utf-8", errors="replace")
-            
+
             if "�" in text or any(ord(c) < 32 and c not in "\n\r\t" for c in text):
                 return Result(candidates=[])
 
             sample = text.splitlines()
-            if not sample:
+            if len(sample) < self.MIN_ROWS:
                 return Result(candidates=[])
 
             sample_text = "\n".join(sample[:10])  # try up to 10 lines
-            dialect = csv.Sniffer().sniff(sample_text)
-            has_header = csv.Sniffer().has_header(sample_text)
+            dialect = csv.Sniffer().sniff(sample_text, self.DELIMS)
             reader = csv.reader(io.StringIO(sample_text), dialect)
-            row_lengths = {len(row) for row in reader if row}
+            rows = [row for row in reader if row]
+            row_lengths = {len(r) for r in rows}
             if len(row_lengths) == 1 and list(row_lengths)[0] > 1:
+                has_header = csv.Sniffer().has_header(sample_text)
                 confidence = 0.96 if has_header else 0.96
-                return Result(candidates=[
-                    Candidate(media_type="text/csv", extension="csv", confidence=confidence)
-                ])
+                return Result(
+                    candidates=[
+                        Candidate(
+                            media_type="text/csv", extension="csv", confidence=confidence
+                        )
+                    ]
+                )
         except Exception:
             pass
         return Result(candidates=[])

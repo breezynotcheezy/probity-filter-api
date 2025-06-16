@@ -31,3 +31,5 @@ Set `FASTBACK_LOG` to change verbosity. Logs are emitted as pretty JSON, for exa
 *************************************************************
 FASTBACK_LOG=INFO python -m fastbackfilter.cli one sample.pdf
 *************************************************************
+
+A JSON schema describing the detection result format is provided in `fastbackfilter/detection_schema.json`.
