@@ -19,3 +19,6 @@ package-dir = {"" = "."}
 [tool.setuptools.packages.find]
 where    = ["."]
 include  = ["fastbackfilter", "fastbackfilter.*"]
+
+[tool.setuptools.package-data]
+fastbackfilter = ["detection_schema.json"]
