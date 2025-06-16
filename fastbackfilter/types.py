@@ -20,4 +20,19 @@ class Result(BaseModel):
     error: str | None = None
     hash: str | None = None
 
+
+class DetectionResult(BaseModel):
+    file_name: str
+    detected_type: str
+    confidence_score: float = Field(ge=0, le=100)
+    detection_method: str
+    timestamp: str
+    errors: List[str] = []
+    warnings: List[str] = []
+    analysis_time: float | None = None
+    file_size: int | None = None
+    mime_type: str | None = None
+    extension: str | None = None
+    hash: str | None = None
+
 BaseModel.model_config = ConfigDict(extra="forbid", populate_by_name=True)

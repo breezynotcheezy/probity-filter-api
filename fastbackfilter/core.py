@@ -143,10 +143,10 @@ def scan_dir(
         allowed = {e.lower().lstrip('.') for e in extensions}
         paths = [p for p in paths if p.suffix.lower().lstrip('.') in allowed]
     with cf.ThreadPoolExecutor(max_workers=workers) as ex:
-
-        futs = {ex.submit(detect, p, only=only, extensions=extensions, **kw): p for p in paths}
-
-        futs = {ex.submit(detect, p, only=only, **kw): p for p in paths}
+        futs = {
+            ex.submit(detect, p, only=only, extensions=extensions, **kw): p
+            for p in paths
+        }
 
         for fut in cf.as_completed(futs):
             yield futs[fut], fut.result()
