@@ -11,6 +11,7 @@ class CSVEngine(EngineBase):
     cost = 0.05
 
     DELIMS = ",;\t|"
+
     MIN_ROWS = 3
 
     def sniff(self, payload: bytes) -> Result:
@@ -19,6 +20,7 @@ class CSVEngine(EngineBase):
 
             if "�" in text or any(ord(c) < 32 and c not in "\n\r\t" for c in text):
                 return Result(candidates=[])
+
 
             lines = text.splitlines()
             if len(lines) < self.MIN_ROWS:
@@ -35,6 +37,7 @@ class CSVEngine(EngineBase):
             rows = [row for row in reader if row]
             if len(rows) < self.MIN_ROWS:
                 return Result(candidates=[])
+
 
             row_lengths = {len(r) for r in rows}
             if len(row_lengths) == 1 and list(row_lengths)[0] > 1:

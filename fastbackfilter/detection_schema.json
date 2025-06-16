@@ -25,9 +25,10 @@
     },
     "analysis_time": { "type": "number" },
     "file_size": { "type": "integer" },
-    "mime_type": { "type": "string" },
+    "mime_type": { "type": "string" },\
     "extension": { "type": "string" }
   },
   "additionalProperties": false
 }
+
 
