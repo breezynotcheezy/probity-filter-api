@@ -1,6 +1,5 @@
 *************************************************************
-pip install fastbackfilter
-python -m fastbackfilter.cli one sample.pdf
+Probity Data Filter Tool
 *************************************************************
 
 
