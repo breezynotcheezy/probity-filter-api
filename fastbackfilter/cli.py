@@ -5,7 +5,6 @@ import argparse
 from pathlib import Path
 
 from datetime import datetime, timezone
-
 from .core import detect, scan_dir
 from .types import DetectionResult, Candidate, Result
 
@@ -18,7 +17,6 @@ def to_detection_result(path: Path, res: Result) -> DetectionResult:
         detected_type=cand.media_type,
         confidence_score=round(cand.confidence * 100, 2),
         detection_method=res.engine,
-
         timestamp=datetime.now(timezone.utc).isoformat(),
 
         errors=[res.error] if res.error else [],
