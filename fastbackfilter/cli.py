@@ -3,35 +3,14 @@ import json
 import sys
 import argparse
 from pathlib import Path
-
-from datetime import datetime, timezone
 from .core import detect, scan_dir
-from .types import DetectionResult, Candidate, Result
-
-
-def to_detection_result(path: Path, res: Result) -> DetectionResult:
-    cand = res.candidates[0] if res.candidates else Candidate(media_type="", confidence=0.0)
-    size = path.stat().st_size if path.exists() else res.bytes_analyzed
-    return DetectionResult(
-        file_name=str(path),
-        detected_type=cand.media_type,
-        confidence_score=round(cand.confidence * 100, 2),
-        detection_method=res.engine,
-        timestamp=datetime.now(timezone.utc).isoformat(),
-
-        errors=[res.error] if res.error else [],
-        warnings=[],
-        analysis_time=res.elapsed_ms,
-        file_size=size,
-        mime_type=cand.media_type,
-        extension=cand.extension,
-
-    )
 def cmd_one(args: argparse.Namespace) -> None:
-    res = detect(args.file, only=args.only, extensions=args.ext)
 
-    report = to_detection_result(args.file, res)
-    json.dump(report.model_dump(), sys.stdout, indent=None if args.raw else 2)
+    res = detect(args.file, cap_bytes=None, only=args.only, extensions=args.ext)
+
+    res = detect(args.file, cap_bytes=None, only=args.only)
+
+    json.dump(res.model_dump(), sys.stdout, indent=None if args.raw else 2)
     sys.stdout.write("\n")
 def cmd_all(args: argparse.Namespace) -> None:
     results = []
@@ -39,11 +18,14 @@ def cmd_all(args: argparse.Namespace) -> None:
         args.root,
         pattern=args.pattern,
         workers=args.workers,
+        cap_bytes=None,
         only=args.only,
+
         extensions=args.ext,
+
     ):
-        report = to_detection_result(path, res)
-        results.append(report.model_dump())
+        line = {"path": str(path), **res.model_dump()}
+        results.append(line)
     json.dump(results, sys.stdout, indent=None if args.raw else 2)
     sys.stdout.write("\n")
 def build_parser() -> argparse.ArgumentParser:
@@ -57,15 +39,12 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="ENGINE",
         help="Restrict detection to these engines",
     )
-
     p_one.add_argument(
         "--ext",
         nargs="+",
         metavar="EXT",
         help="Only analyze files with these extensions",
     )
-
-
     p_one.add_argument("--raw", action="store_true", help="compact JSON")
     p_one.set_defaults(func=cmd_one)
     p_all = sub.add_parser("all", help="Scan directory recursively")
