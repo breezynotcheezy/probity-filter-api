@@ -6,10 +6,11 @@ from ..registry import register
 @register
 class XMLEngine(EngineBase):
     name = "xml"
+    cost = 0.05
     _MAGIC = [b'\xEF\xBB\xBF', b'\xFF\xFE', b'\xFE\xFF', b"<?xml"]
 
     def sniff(self, payload: bytes) -> Result:
-        window = payload[:8]
+        window = payload[:64]
         cand = []
 
         for magic in self._MAGIC:
@@ -23,7 +24,15 @@ class XMLEngine(EngineBase):
                         confidence=conf,
                     )
                 )
-                # Found a match, no need to check further
                 break
+
+        if not cand and window.lstrip().startswith(b"<") and b">" in window:
+            cand.append(
+                Candidate(
+                    media_type="application/xml",
+                    extension="xml",
+                    confidence=0.6,
+                )
+            )
 
         return Result(candidates=cand)
